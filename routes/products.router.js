@@ -18,7 +18,7 @@ router.post("/products", async (req, res) => {
     }
 
     // 입력받은 데이터 및 기존 데이터를 이용해 생성한 값을 할당
-    const createdProducts = await products.create({productsName, contentWriting, name, pw, productStatus, date});
+    const createdProducts = await products.create({productsName, contentWriting, name, pw});
     
     // JSON 형식으로 응답
     res.json({products: createdProducts});
