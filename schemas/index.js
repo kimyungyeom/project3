@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 // MongoDB 서버에 연결
 const connect = () => {
     mongoose
-        .connect("mongodb:127.0.0.1:27017/store")
+        .connect("mongodb://127.0.0.1:27017/store")
         .then(() => console.log("MongoDB 연결 완료"))
         .catch((err) => console.log(`MongoDB 연결 실패 ${err}`));
 };
