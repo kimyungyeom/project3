@@ -12,7 +12,7 @@ connect();
 
 // JSON 미들웨어 사용
 app.use(express.json());
-
+// 위에서 가져온 라우터 미들웨어 사용
 app.use("/api", [productsRouter]);
 
 // 서버 구동
