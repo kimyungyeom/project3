@@ -19,8 +19,3 @@ app.use("/api", [productsRouter]);
 app.listen(port, () => {
     console.log(port, "포트로 서버 구동을 시작합니다.");
 })
-
-// 서버 구동이 완료됬는지 확인용
-// app.get('/', (req, res) => {
-//     res.send("서버 구동 완료.");
-// })
