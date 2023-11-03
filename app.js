@@ -4,6 +4,16 @@ const express = require("express");
 const app = express();
 // 포트 번호 설정
 const port = 3000;
+// products.router.js 가져오기
+const productsRouter = require("./routes/products.router.js");
+// schemas 모듈들 가져오기
+const connect = require("./schemas");
+connect();
+
+// JSON 미들웨어 사용
+app.use(express.json());
+
+app.use("/api", [productsRouter]);
 
 // 서버 구동
 app.listen(port, () => {
