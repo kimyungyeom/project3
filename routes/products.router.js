@@ -7,7 +7,8 @@ const router = express.Router();
 // products.schema.js 가져오기
 const products = require("../schemas/products.schema.js");
 
-router.post("/products", async (req, res) => { 
+router.post("/products", async (req, res) => {
+    // 서버에서 req.body를 통해 객체형식으로 받아온 데이터들을 구조분해할당으로 각각 할당
     const {productsName, contentWriting, name, pw} = req.body;
 
     // 입력받은 상품명 찾아서 할당
@@ -25,9 +26,21 @@ router.post("/products", async (req, res) => {
 })
 
 // 상품 목록 조회 API
-router.get("/products", (req, res) => {
-    res.status(200).json({"products" : products});
+router.get("/products", async (req, res) => {
+    // 해당 데이터들만 찾아 빈 객체에 해당 값을 할당하고 변수에 다시 할당
+    const searchProductList = await products.find({}, "productsName name productStatus date")
+    // 날짜를 기준으로 내림차순(최신순) 정렬 / -1을 1로 바꾸면 오름차순 
+    .sort({date: -1 });
+    res.status(200).json({"products" : searchProductList});
 })
+
+// 상품 상세 조회 API
+router.get("/products/:productsName", async (req, res) => {
+    const {productsName} = req.params;
+    const detail = await products.findOne({productsName})
+    .select("productsName contentWriting name productStatus date");
+    res.status(200).json({detail});
+});
 
 // router 모듈 내보내기
 module.exports = router;
