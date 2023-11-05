@@ -55,16 +55,14 @@ router.put("/products/:productsName", async (req, res) => {
     const findingProduct = await products.find({productsName});
 
     // 해당하는 상품이 없거나 비밀번호가 서로 틀릴경우 메시지 반환
-    if (!findingProduct.length || findingProduct.pw !== pw) {
+    if (!findingProduct.length || findingProduct[0].pw !== pw) {
         return res.status(400).json({success: false, errorMessage:"상품 조회에 실패하였습니다."});
     }
     // 위에 조건이 해당하지 않으면 작성내용, 상품상태를 수정한다. $set 연산자 : 특정값 필드 변경
     else {
         await products.updateOne(
             {productsName},
-            {pw},
-            {$set: {contentWriting}},
-            {$set: {productStatus}}
+            {$set: {contentWriting, productStatus}}
         );
     }
 
