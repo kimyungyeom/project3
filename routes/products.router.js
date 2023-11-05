@@ -22,7 +22,7 @@ router.post("/products", async (req, res) => {
     const createdProducts = await products.create({productsName, contentWriting, name, pw});
     
     res.json({products: createdProducts});
-})
+});
 
 // 상품 목록 조회 API
 router.get("/products", async (req, res) => {
@@ -32,7 +32,7 @@ router.get("/products", async (req, res) => {
     .sort({date: -1 });
     
     res.status(200).json({"products" : searchProductList});
-})
+});
 
 // 상품 상세 조회 API
 router.get("/products/:productsName", async (req, res) => {
@@ -51,7 +51,7 @@ router.put("/products/:productsName", async (req, res) => {
     const {productsName} = req.params;
     const {contentWriting, productStatus, pw} = req.body;
 
-    // 해당하는 상품명을 가진 객체하나를 반환하고 할당
+    // 해당하는 상품명을 가진 객체를 반환하고 할당
     const findingProduct = await products.find({productsName});
 
     // 해당하는 상품이 없거나 비밀번호가 서로 틀릴경우 메시지 반환
@@ -67,7 +67,28 @@ router.put("/products/:productsName", async (req, res) => {
     }
 
     res.json({ success: true});
-})
+});
+
+// 상품 삭제 API
+router.delete("/products/:productsName", async (req, res) => {
+    // 상품명, 비밀번호를 req로 전달받기
+    const {productsName} = req.params;
+    const {pw} = req.body;
+
+    //해당하는 상품명을 가진 객체를 반환하고 할당
+    const findingProduct = await products.find({productsName});
+
+    // 해당하는 상품이 없거나 비밀번호가 서로 틀릴경우 메시지 반환
+    if (!findingProduct.length || findingProduct[0].pw !== pw) {
+        return res.status(400).json({success: false, errorMessage:"상품 조회에 실패하였습니다."});
+    }
+    // 위에 조건이 해당하지 않으면 해당 상품 삭제
+    else {
+        await products.deleteOne({productsName});     
+    }
+
+    res.json({ success: true});
+});
 
 // router 모듈 내보내기
 module.exports = router;
