@@ -1,12 +1,16 @@
 // mongoose 모듈 가져오기
 const mongoose = require("mongoose");
 
+// env 불러오기
+require('dotenv').config();
+
+const mongodb = process.env.MongoDB;
+
+
 // MongoDB 서버에 연결
 const connect = () => {
     mongoose
-        .connect(
-            "mongodb+srv://kgk1599:789654123b@mongodb-cluster.y04dppm.mongodb.net/?retryWrites=true&w=majority"
-        )
+        .connect(mongodb)
         .then(() => console.log("MongoDB 연결 완료"))
         .catch((err) => console.log(`MongoDB 연결 실패 ${err}`));
 };
