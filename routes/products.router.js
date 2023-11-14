@@ -30,6 +30,11 @@ router.get("/products", async (req, res) => {
     const searchProductList = await products.find({}, "productsName name productStatus date")
     // 날짜를 기준으로 내림차순(최신순) 정렬 / -1을 1로 바꾸면 오름차순 
     .sort({date: -1 });
+
+    // 해당하는 상품이 없으면 메시지 반환
+    if (!searchProductList.length) {
+        return res.status(400).json({success: false, errorMessage:"상품 조회에 실패하였습니다."});
+    }
     
     res.status(200).json({"products" : searchProductList});
 });
@@ -41,6 +46,11 @@ router.get("/products/:productsName", async (req, res) => {
     // 해당하는 상품명을 가진 객체하나를 반환하고 select를 통해 해당하는 값만 할당
     const detail = await products.findOne({productsName})
     .select("productsName contentWriting name productStatus date");
+
+    // 해당하는 상품이 없으면 메시지 반환
+    if (!detail.length) {
+        return res.status(400).json({success: false, errorMessage:"상품 조회에 실패하였습니다."});
+    }
     
     res.status(200).json({detail});
 });
@@ -56,8 +66,9 @@ router.put("/products/:productsName", async (req, res) => {
 
     // 해당하는 상품이 없거나 비밀번호가 서로 틀릴경우 메시지 반환
     if (!findingProduct.length || findingProduct[0].pw !== pw) {
-        return res.status(400).json({success: false, errorMessage:"상품 조회에 실패하였습니다."});
+        return res.status(400).json({success: false, errorMessage:"상품 수정에 실패하였습니다."});
     }
+
     // 작성내용, 상품상태를 수정한다. $set 연산자 : 특정값 필드 변경
     await products.updateOne(
         {productsName},
@@ -78,7 +89,7 @@ router.delete("/products/:productsName", async (req, res) => {
 
     // 해당하는 상품이 없거나 비밀번호가 서로 틀릴경우 메시지 반환
     if (!findingProduct.length || findingProduct[0].pw !== pw) {
-        return res.status(400).json({success: false, errorMessage:"상품 조회에 실패하였습니다."});
+        return res.status(400).json({success: false, errorMessage:"상품 삭제에 실패하였습니다."});
     }
     
     // 해당하는 상품을 삭제한다.
