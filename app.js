@@ -5,6 +5,8 @@ const app = express();
 // 포트 번호 env 불러오기
 require('dotenv').config();
 const port = process.env.Server_port;
+// cookie-parser 모듈 가져오기
+const cookieParser = require("cookie-parser");
 // products.router.js 가져오기
 const productsRouter = require("./routes/products.router.js");
 // users.router.js 가져오기
@@ -17,6 +19,10 @@ connect();
 
 // JSON 미들웨어 사용
 app.use(express.json());
+// form-urlencoded 라는 규격의 body 데이터를 손쉽게 코드에서 사용할 수 있는 미들웨어 사용
+app.use(express.urlencoded({ extended: false }));
+// cookieParser 미들웨어 사용
+app.use(cookieParser());
 // 위에서 가져온 라우터 미들웨어 사용
 app.use("/api", [productsRouter, usersRouter, authRouter]);
 
