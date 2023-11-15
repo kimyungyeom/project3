@@ -6,6 +6,8 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 // jwt모듈 가져오기
 const jwt = require("jsonwebtoken");
+// 인증 middleware 가져오기
+const authMiddleware = require("../middlewares/need-signin.middleware");
 
 const { Op } = require("sequelize");
 const { User } = require("../models");
@@ -60,6 +62,16 @@ router.post("/users", async (req, res) => {
     // 이메일, 닉네임, 해시화한 비밀번호를 저장하고 회원가입 성공 시, 비밀번호를 제외 한 사용자 정보 반환.
     await User.create({ email, nickname, hashingPassword });
     res.status(201).send({ email, nickname });
+});
+
+// 내 정보 조회 API
+router.get("/user/me", authMiddleware, (req, res) => {
+    const { email, nickname } = res.locals.user;
+
+    // 비밀번호를 제외한 내 정보를 반환
+    res.status(200).json({
+        user : { email, nickname }
+    });
 });
 
 // router 모듈 내보내기
