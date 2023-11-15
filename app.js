@@ -9,6 +9,8 @@ const port = process.env.Server_port;
 const productsRouter = require("./routes/products.router.js");
 // users.router.js 가져오기
 const usersRouter = require("./routes/users.router.js");
+// auth.router.js 가져오기
+const authRouter = require("./routes/auth.router.js");
 // schemas 모듈들 가져오기
 const connect = require("./mongo/index.js");
 connect();
@@ -16,7 +18,7 @@ connect();
 // JSON 미들웨어 사용
 app.use(express.json());
 // 위에서 가져온 라우터 미들웨어 사용
-app.use("/api", [productsRouter, usersRouter]);
+app.use("/api", [productsRouter, usersRouter, authRouter]);
 
 // 서버 구동
 app.listen(port, () => {
