@@ -4,6 +4,8 @@ const express = require("express");
 const router = express.Router();
 // bcrypt모듈 가져오기
 const bcrypt = require("bcrypt");
+// jwt모듈 가져오기
+const jwt = require("jsonwebtoken");
 
 const { Op } = require("sequelize");
 const { User } = require("../models");
@@ -58,6 +60,43 @@ router.post("/users", async (req, res) => {
     // 이메일, 닉네임, 해시화한 비밀번호를 저장하고 회원가입 성공 시, 비밀번호를 제외 한 사용자 정보 반환.
     await User.create({ email, nickname, hashingPassword });
     res.status(201).send({ email, nickname });
+});
+
+// 로그인 API
+const secretKey = process.env.Secret_key;
+
+router.post("/auth", async (req, res) => {
+    // 이메일, 비밀번호를 데이터로 넘겨받음
+    const { email, password } = req.body;
+  
+    // 해당 이메일을 가진 유저를 데이터베이스에서 찾는다.
+    const user = await User.findOne({
+         where: {
+             email,
+         },
+    });
+
+    // 유저 존재 유무와 비밀번호 서로 일치여부 확인
+    if (!user || password !== user.password) {
+      res.status(400).send({
+         errorMessage: "이메일 또는 패스워드가 틀렸습니다.",
+      });
+      return;
+    }
+  
+    // 로그인 성공 시 JWT AccessToken을 생성
+    const accessToken = jwt.sign(
+        // userId를 담고 있는 Payload
+        { userId: user.userId },
+        secretKey,
+        // Token 유효기한 12시간 설정
+        { expiresIn: new Date().getHours() + 12}
+    );
+    
+    // 생성한 Token 반환
+    res.status(200).send({
+        token: accessToken
+    });
 });
 
 // router 모듈 내보내기
