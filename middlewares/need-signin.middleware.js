@@ -3,6 +3,10 @@ const jwt = require("jsonwebtoken");
 // 유저 모델을 가져온다.
 const { User } = require("../models");
 
+// env 불러오기
+require('dotenv').config();
+const secretKey = process.env.Secret_key;
+
 // 사용자 인증 미들웨어
 module.exports = async (req, res, next) => {
      //req.headers를 통한 authorization 전달받기
@@ -22,7 +26,7 @@ module.exports = async (req, res, next) => {
     // 서버를 꺼지는 것을 방지하기 위해 try catch 사용
     try {
     // 토큰 값 검증하는 과정. 복호화 및 검증
-    const { userId } = jwt.verify(authToken, "sparta-secret-key");
+    const { userId } = jwt.verify(authToken, secretKey);
     // 인증 성공 시 res.locals.user에 인증 된 사용자 정보를 담는다.
     User.findByPk(userId).then((user) => {
         res.locals.user = user;
