@@ -5,7 +5,7 @@ const router = express.Router();
 
 // 상품 작성 API
 // products.schema.js 가져오기
-const products = require("../schemas/products.schema.js");
+const products = require("../models/products.schema.js");
 
 router.post("/products", async (req, res) => {
     // 서버에서 req.body를 통해 객체형식으로 받아온 데이터들을 구조분해할당으로 각각 할당
