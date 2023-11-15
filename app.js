@@ -7,6 +7,8 @@ require('dotenv').config();
 const port = process.env.Server_port;
 // products.router.js 가져오기
 const productsRouter = require("./routes/products.router.js");
+// users.router.js 가져오기
+const usersRouter = require("./routes/users.router.js");
 // schemas 모듈들 가져오기
 const connect = require("./mongo/index.js");
 connect();
@@ -14,7 +16,7 @@ connect();
 // JSON 미들웨어 사용
 app.use(express.json());
 // 위에서 가져온 라우터 미들웨어 사용
-app.use("/api", [productsRouter]);
+app.use("/api", [productsRouter, usersRouter]);
 
 // 서버 구동
 app.listen(port, () => {
