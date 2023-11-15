@@ -8,7 +8,7 @@ const port = process.env.Server_port;
 // products.router.js 가져오기
 const productsRouter = require("./routes/products.router.js");
 // schemas 모듈들 가져오기
-const connect = require("./schemas");
+const connect = require("./mongo/index.js");
 connect();
 
 // JSON 미들웨어 사용
