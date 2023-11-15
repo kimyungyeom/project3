@@ -3,9 +3,7 @@ const mongoose = require("mongoose");
 
 // env 불러오기
 require('dotenv').config();
-
 const mongodb = process.env.MongoDB;
-
 
 // MongoDB 서버에 연결
 const connect = () => {
