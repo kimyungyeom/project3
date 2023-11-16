@@ -60,22 +60,30 @@ router.get("/products/:productsName", async (req, res) => {
 });
 
 // 상품 정보 수정 API
-router.put("/products/:productsName", async (req, res) => {
-    // 상품명, 작성내용, 상품상태, 비밀번호를 req로 전달받기
+router.put("/products/:productsName", authMiddleware, async (req, res) => {
+    // 인증에 성공한 사용자의 userId를 res.locals.user를 통해 전달받기
+    const {userId} = res.locals.user;
+    
+    // 상품명, 작성내용, 상품상태를 req로 전달받기
     const {productsName} = req.params;
-    const {contentWriting, productStatus, pw} = req.body;
+    const {contentWriting, productStatus} = req.body;
 
     // 해당하는 상품명을 가진 객체를 반환하고 할당
-    const findingProduct = await products.find({productsName});
+    const findingProduct = await products.find({userId, productsName});
 
-    // 해당하는 상품이 없거나 비밀번호가 서로 틀릴경우 메시지 반환
-    if (!findingProduct.length || findingProduct[0].pw !== pw) {
-        return res.status(400).json({success: false, errorMessage:"상품 수정에 실패하였습니다."});
+    // 해당하는 상품이 없을 경우 메시지 반환
+    if (!findingProduct.length) {
+        return res.status(400).json({success: false, errorMessage:"상품 조회에 실패하였습니다."});
+    }
+
+    // 사용자의 userId와 상품을 등록한 userId가 일치하지 않을 때 메시지반환
+    if (findingProduct[0] !== userId) {
+        return res.status(400).json({success: false, errorMessage:"상품 조회에 실패하였습니다."});
     }
 
     // 작성내용, 상품상태를 수정한다. $set 연산자 : 특정값 필드 변경
     await products.updateOne(
-        {productsName},
+        {userId, productsName},
         {$set: {contentWriting, productStatus}}
     );
     
@@ -95,6 +103,11 @@ router.delete("/products/:productsName", authMiddleware, async (req, res) => {
 
     // 해당하는 상품이 없을 경우 메시지 반환
     if (!findingProduct.length) {
+        return res.status(400).json({success: false, errorMessage:"상품 조회에 실패하였습니다."});
+    }
+
+    // 사용자의 userId와 상품을 등록한 userId가 일치하지 않을 때 메시지반환
+    if (findingProduct[0] !== userId) {
         return res.status(400).json({success: false, errorMessage:"상품 조회에 실패하였습니다."});
     }
     
