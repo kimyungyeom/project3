@@ -2,14 +2,18 @@
 const express = require('express');
 // Express모듈에서 라우터 가져오기
 const router = express.Router();
+// 인증 middleware 가져오기
+const authMiddleware = require("../middlewares/need-signin.middleware");
 
-// 상품 작성 API
+// 상품 생성 API
 // products.schema.js 가져오기
 const products = require("../models/products.schema.js");
 
-router.post("/products", async (req, res) => {
-    // 서버에서 req.body를 통해 객체형식으로 받아온 데이터들을 구조분해할당으로 각각 할당
-    const {productsName, contentWriting, name, pw} = req.body;
+router.post("/products", authMiddleware, async (req, res) => {
+    // 인증에 성공한 사용자의 userId를 전달받는다.
+    const { userId } = res.locals.user;
+    // API 호출시 상품명, 작성내용을 전달 받는다.
+    const {productsName, contentWriting} = req.body;
 
     // 입력받은 상품명 찾아서 할당
     const findingProductsName = await products.find({productsName});
@@ -19,7 +23,7 @@ router.post("/products", async (req, res) => {
     }
 
     // 입력받은 데이터 및 기존 데이터를 이용해 생성한 값을 할당
-    const createdProducts = await products.create({productsName, contentWriting, name, pw});
+    const createdProducts = await products.create({productsName, contentWriting, userId});
     
     res.json({products: createdProducts});
 });
