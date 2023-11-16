@@ -57,8 +57,7 @@ router.post("/users", async (req, res) => {
 
     // 비밀번호 hash화 시키기
     const hashingPassword = bcrypt.hash(password, 10);
-    console.log(hashingPassword);
-
+  
     // 이메일, 닉네임, 해시화한 비밀번호를 저장하고 회원가입 성공 시, 비밀번호를 제외 한 사용자 정보 반환.
     await User.create({ email, nickname, hashingPassword });
     res.status(201).send({ email, nickname });
