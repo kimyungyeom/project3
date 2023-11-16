@@ -2,7 +2,6 @@
 const express = require("express");
 // Express모듈에서 라우터 가져오기
 const router = express.Router();
-
 // jwt모듈 가져오기
 const jwt = require("jsonwebtoken");
 
@@ -40,6 +39,8 @@ router.post("/auth", async (req, res) => {
         { expiresIn: new Date().getHours() + 12}
     );
     
+    // JWT를 Cookie로 할당
+    res.cookie("Authorization", `Bearer ${accessToken}`);
     // 생성한 Token 반환
     res.status(200).send({
         token: accessToken
