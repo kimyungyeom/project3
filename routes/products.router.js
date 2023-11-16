@@ -10,13 +10,13 @@ const authMiddleware = require("../middlewares/need-signin.middleware");
 const products = require("../models/products.schema.js");
 
 router.post("/products", authMiddleware, async (req, res) => {
-    // 인증에 성공한 사용자의 userId를 전달받는다.
-    const { userId } = res.locals.user;
-    // API 호출시 상품명, 작성내용을 전달 받는다.
+    // 인증에 성공한 사용자의 userId를 res.locals.user를 통해 전달받기
+    const {userId} = res.locals.user;
+    // 상품명, 작성내용을 req로 전달 받기
     const {productsName, contentWriting} = req.body;
 
     // 입력받은 상품명 찾아서 할당
-    const findingProductsName = await products.find({productsName});
+    const findingProductsName = await products.find({userId, productsName});
     // 동일한 상품명이 있을시에 예외처리
     if (findingProductsName.length) {
         return res.status(400).json({success: false, errorMessage:"이미 있는 상품입니다."});
@@ -25,7 +25,7 @@ router.post("/products", authMiddleware, async (req, res) => {
     // 입력받은 데이터 및 기존 데이터를 이용해 생성한 값을 할당
     const createdProducts = await products.create({productsName, contentWriting, userId});
     
-    res.json({products: createdProducts});
+    res.json({ products: createdProducts });
 });
 
 // 상품 목록 조회 API
@@ -79,27 +79,29 @@ router.put("/products/:productsName", async (req, res) => {
         {$set: {contentWriting, productStatus}}
     );
     
-    res.json({ success: true});
+    res.json({ success: true });
 });
 
 // 상품 삭제 API
-router.delete("/products/:productsName", async (req, res) => {
-    // 상품명, 비밀번호를 req로 전달받기
+router.delete("/products/:productsName", authMiddleware, async (req, res) => {
+    // 인증에 성공한 사용자의 userId를 res.locals.user를 통해 전달받기
+    const {userId} = res.locals.user;
+    
+    // 상품명을 데이터로 전달받기
     const {productsName} = req.params;
-    const {pw} = req.body;
+    
+    // 인증에 성공한 userId와 상품을 등록한 userId가 일치한 상품의 객체를 반환하고 할당
+    const findingProduct = await products.find({userId, productsName});
 
-    // 해당하는 상품명을 가진 객체를 반환하고 할당
-    const findingProduct = await products.find({productsName});
-
-    // 해당하는 상품이 없거나 비밀번호가 서로 틀릴경우 메시지 반환
-    if (!findingProduct.length || findingProduct[0].pw !== pw) {
-        return res.status(400).json({success: false, errorMessage:"상품 삭제에 실패하였습니다."});
+    // 해당하는 상품이 없을 경우 메시지 반환
+    if (!findingProduct.length) {
+        return res.status(400).json({success: false, errorMessage:"상품 조회에 실패하였습니다."});
     }
     
     // 해당하는 상품을 삭제한다.
-    await products.deleteOne({productsName});     
+    await products.deleteOne({userId, productsName});     
 
-    res.json({ success: true});
+    res.json({ success: true });
 });
 
 // router 모듈 내보내기
