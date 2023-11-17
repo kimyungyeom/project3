@@ -1,6 +1,6 @@
 const { Model, DataTypes} = require("sequelize");
 
-module.exports = class Product extends Model {
+module.exports = class Products extends Model {
     static init(sequelize) {
         return super.init({
             // 유저ID
