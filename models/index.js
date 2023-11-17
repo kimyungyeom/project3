@@ -14,6 +14,10 @@ const db = {};
 const sequelize = new Sequelize(config.database, config.username, config.password, config);
 
 db.sequelize = sequelize;
+db.Sequelize = Sequelize;
+
+db.User = User
+db.Products = Products
 
 // 유저 및 상품의 Sequelize 모델 초기화
 User.init(sequelize);
