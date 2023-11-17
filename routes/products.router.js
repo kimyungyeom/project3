@@ -16,7 +16,12 @@ router.post("/products", authMiddleware, async (req, res) => {
     const {productsName, contentWriting} = req.body;
 
     // 입력받은 상품명 찾아서 할당
-    const findingProductsName = await products.find({userId, productsName});
+    const findingProductsName = await products.find({
+        where: {
+            userId,
+            productsName
+        }
+    });
     // 동일한 상품명이 있을시에 예외처리
     if (findingProductsName.length) {
         return res.status(400).json({success: false, errorMessage:"이미 있는 상품입니다."});
@@ -37,7 +42,7 @@ router.get("/products", async (req, res) => {
 
     // 해당하는 상품이 없으면 메시지 반환
     if (!searchProductList.length) {
-        return res.status(400).json({success: false, errorMessage:"상품 조회에 실패하였습니다."});
+        return res.status(400).send({success: false, errorMessage:"상품 조회에 실패하였습니다."});
     }
     
     res.status(200).json({"products" : searchProductList});
@@ -48,12 +53,16 @@ router.get("/products/:productsName", async (req, res) => {
     // 서버에서 req.params를 통해 :productsName이라는 URL 라우팅 매개변수를 추출
     const {productsName} = req.params;
     // 해당하는 상품명을 가진 객체하나를 반환하고 select를 통해 해당하는 값만 할당
-    const detail = await products.findOne({productsName})
+    const detail = await products.findOne({
+        where: {
+            productsName
+        }
+    })
     .select("productsName contentWriting name productStatus date");
 
     // 해당하는 상품이 없으면 메시지 반환
     if (!detail.length) {
-        return res.status(400).json({success: false, errorMessage:"상품 조회에 실패하였습니다."});
+        return res.status(400).send({success: false, errorMessage:"상품 조회에 실패하였습니다."});
     }
     
     res.status(200).json({detail});
@@ -69,22 +78,32 @@ router.put("/products/:productsName", authMiddleware, async (req, res) => {
     const {contentWriting, productStatus} = req.body;
 
     // 해당하는 상품명을 가진 객체를 반환하고 할당
-    const findingProduct = await products.find({userId, productsName});
+    const findingProduct = await products.findOne({
+        where: {
+            userId,
+            productsName
+        }
+    });
 
     // 해당하는 상품이 없을 경우 메시지 반환
     if (!findingProduct.length) {
-        return res.status(400).json({success: false, errorMessage:"상품 조회에 실패하였습니다."});
+        return res.status(400).send({success: false, errorMessage:"상품 조회에 실패하였습니다."});
     }
 
     // 사용자의 userId와 상품을 등록한 userId가 일치하지 않을 때 메시지반환
     if (findingProduct[0] !== userId) {
-        return res.status(400).json({success: false, errorMessage:"상품 조회에 실패하였습니다."});
+        return res.status(400).send({success: false, errorMessage:"상품 조회에 실패하였습니다."});
     }
 
-    // 작성내용, 상품상태를 수정한다. $set 연산자 : 특정값 필드 변경
-    await products.updateOne(
-        {userId, productsName},
-        {$set: {contentWriting, productStatus}}
+    // 작성내용, 상품상태를 수정한다.
+    await products.update(
+        { contentWriting, productStatus},
+        {
+            where: {
+                userId,
+                productsName
+            }
+        }
     );
     
     res.json({ success: true });
@@ -99,20 +118,30 @@ router.delete("/products/:productsName", authMiddleware, async (req, res) => {
     const {productsName} = req.params;
     
     // 인증에 성공한 userId와 상품을 등록한 userId가 일치한 상품의 객체를 반환하고 할당
-    const findingProduct = await products.find({userId, productsName});
+    const findingProduct = await products.findOne({
+        where: {
+            userId,
+            productsName
+        }    
+    });
 
     // 해당하는 상품이 없을 경우 메시지 반환
     if (!findingProduct.length) {
-        return res.status(400).json({success: false, errorMessage:"상품 조회에 실패하였습니다."});
+        return res.status(400).send({success: false, errorMessage:"상품 조회에 실패하였습니다."});
     }
 
     // 사용자의 userId와 상품을 등록한 userId가 일치하지 않을 때 메시지반환
     if (findingProduct[0] !== userId) {
-        return res.status(400).json({success: false, errorMessage:"상품 조회에 실패하였습니다."});
+        return res.status(400).send({success: false, errorMessage:"상품 조회에 실패하였습니다."});
     }
     
     // 해당하는 상품을 삭제한다.
-    await products.deleteOne({userId, productsName});     
+    await products.destroy({
+        where: {
+            userId,
+            productsName
+        }
+    });     
 
     res.json({ success: true });
 });
