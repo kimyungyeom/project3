@@ -8,24 +8,26 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 const { Op } = require("sequelize");
-const { User } = require("../models");
+const { User } = require("../models/index");
 
 // 회원가입 API
-router.post("/users", async (req, res) => {
+router.post("/auth/reg", async (req, res) => {
     // 이메일, 닉네임, 비밀번호, 비밀번호확인을 데이터로 넘겨받음
     const { email, nickname, password, confirmPassword } = req.body;
 
     // 빈 곳 여부 체크
     if (!email || !nickname || !password || !confirmPassword) {
         return res.status(400).send({
-            errorMessage: "입력란 중 비어있는 곳이 있습니다.",
+            success: false,
+            errorMessage: "입력란 중 비어있는 곳이 있습니다."
          });
     }
 
     // 비밀번호 최소 6자 이상 및 서로 일치 여부 확인
     if (password.length < 6 || password !== confirmPassword) {
         return res.status(400).send({
-            errorMessage: "비밀번호 최소 6자 이상이어야 하며, 비밀번호가 서로 일치해야 합니다.",
+            success: false,
+            errorMessage: "비밀번호 최소 6자 이상이어야 하며, 비밀번호가 서로 일치해야 합니다."
         });
     }
 
@@ -33,7 +35,8 @@ router.post("/users", async (req, res) => {
     const emailRegex = /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+/;
     if (!emailRegex.test(email)) {
         return res.status(400).send({
-            errorMessage: "올바른 이메일 형식이 아닙니다.",
+            success: false,
+            errorMessage: "올바른 이메일 형식이 아닙니다."
         });
     }
 
@@ -44,31 +47,34 @@ router.post("/users", async (req, res) => {
         },
     });
     if (existsUsers.length) {
-        return res.status(400).send({
-            errorMessage: "이메일 또는 닉네임이 이미 사용중입니다.",
+        return res.status(409).send({
+            success: false,
+            errorMessage: "이메일 또는 닉네임이 이미 사용중입니다."
         });
     }
 
     // 비밀번호 hash화 시키기
-    const hashingPassword = bcrypt.hash(password, 10);
+    const hashingPassword = await bcrypt.hash(password, 10);
   
     // 이메일, 닉네임, 해시화한 비밀번호를 저장하고 회원가입 성공 시, 비밀번호를 제외 한 사용자 정보 반환.
-    await User.create({ email, nickname, hashingPassword });
-    res.status(201).json({ email, nickname });
+    await User.create({ email, nickname, password: hashingPassword });
+    res.status(201).json({
+        success: true,
+        message: "회원가입 되신 것을 축하드립니다!",
+        data: { email, nickname }
+    });
 });
 
 // 로그인 API
 const secretKey = process.env.Secret_key;
 
-router.post("/auth", async (req, res) => {
+router.post("/auth/login", async (req, res) => {
     // 이메일, 비밀번호를 데이터로 넘겨받음
     const { email, password } = req.body;
   
     // 해당 이메일을 가진 유저를 데이터베이스에서 찾는다.
     const user = await User.findOne({
-         where: {
-             email,
-         },
+         where: { email }
     });
 
     // 유저 존재 유무 확인
@@ -79,7 +85,8 @@ router.post("/auth", async (req, res) => {
     }
 
     // 비밀번호 서로 일치여부 확인
-    const match = await bcrypt.compare(password, user.hashingPassword);
+    const match = await bcrypt.compare(password, user.password);
+    
     if (!match) {
       return res.status(400).send({
          errorMessage: "비밀번호가 틀렸습니다. 다시 확인해주세요.",
@@ -92,14 +99,14 @@ router.post("/auth", async (req, res) => {
         { userId: user.userId },
         secretKey,
         // Token 유효기한 12시간 설정
-        { expiresIn: new Date().getHours() + 12}
+        { expiresIn: new Date().getHours() + 12 }
     );
     
-    // JWT를 Cookie로 할당
-    res.cookie("Authorization", `Bearer ${accessToken}`);
     // 생성한 Token 반환
     return res.status(200).json({
-        token: accessToken
+        success: true,
+        message: "로그인 되었습니다.",
+        data: { token: accessToken }
     });
 });
 
