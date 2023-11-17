@@ -13,9 +13,6 @@ const productsRouter = require("./routes/products.router.js");
 const usersRouter = require("./routes/users.router.js");
 // auth.router.js 가져오기
 const authRouter = require("./routes/auth.router.js");
-// schemas 모듈들 가져오기
-const connect = require("./mongo/index.js");
-connect();
 
 // JSON 미들웨어 사용
 app.use(express.json());
