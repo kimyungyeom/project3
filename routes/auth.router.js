@@ -17,7 +17,7 @@ router.post("/auth/reg", async (req, res) => {
 
     // 빈 곳 여부 체크
     if (!email || !nickname || !password || !confirmPassword) {
-        return res.status(400).send({
+        return res.status(401).send({
             success: false,
             errorMessage: "입력란 중 비어있는 곳이 있습니다."
          });
@@ -25,7 +25,7 @@ router.post("/auth/reg", async (req, res) => {
 
     // 비밀번호 최소 6자 이상 및 서로 일치 여부 확인
     if (password.length < 6 || password !== confirmPassword) {
-        return res.status(400).send({
+        return res.status(401).send({
             success: false,
             errorMessage: "비밀번호 최소 6자 이상이어야 하며, 비밀번호가 서로 일치해야 합니다."
         });
@@ -34,7 +34,7 @@ router.post("/auth/reg", async (req, res) => {
     // 이메일 형식 체크
     const emailRegex = /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+/;
     if (!emailRegex.test(email)) {
-        return res.status(400).send({
+        return res.status(401).send({
             success: false,
             errorMessage: "올바른 이메일 형식이 아닙니다."
         });
@@ -79,7 +79,7 @@ router.post("/auth/login", async (req, res) => {
 
     // 유저 존재 유무 확인
     if (!user) {
-        return res.status(400).send({
+        return res.status(401).send({
             success: false,
             errorMessage : "해당 이메일을 가진 유저가 존재하지 않습니다."
         });
@@ -89,7 +89,7 @@ router.post("/auth/login", async (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     
     if (!match) {
-      return res.status(400).send({
+      return res.status(401).send({
             success: false,
             errorMessage: "비밀번호가 틀렸습니다. 다시 확인해주세요."
       });
