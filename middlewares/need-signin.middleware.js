@@ -20,7 +20,7 @@ module.exports = async (req, res, next) => {
     if (!authToken || authType !== "Bearer") {
         res.status(401).send({
             success:false,
-            errorMessage: "로그인 후 사용 가능한 기능입니다."
+            errorMessage: "로그인 후 이용 가능한 기능입니다."
         });
         return;
     }
