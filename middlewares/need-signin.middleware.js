@@ -11,6 +11,7 @@ const secretKey = process.env.Secret_key;
 module.exports = async (req, res, next) => {
      //req.headers를 통한 authorization 전달받기
     const { authorization } = req.headers;
+
     // split를 통해 분리 기준은 " "으로한다.
     // 배열구조분해할당으로 authType, authToken으로 각각 할당한다.
     const [authType, authToken] = (authorization || "").split(" ");
@@ -18,7 +19,8 @@ module.exports = async (req, res, next) => {
     // authType이 Bearer가 아니거나 빈값일 때 예외처리
     if (!authToken || authType !== "Bearer") {
         res.status(401).send({
-        errorMessage: "로그인 후 사용 가능한 기능입니다.",
+            success:false,
+            errorMessage: "로그인 후 사용 가능한 기능입니다."
         });
         return;
     }
@@ -37,13 +39,15 @@ module.exports = async (req, res, next) => {
         // 토큰 유효기간이 만료된 경우 예외처리
         if(err.name === "TokenExpiredError") {
             res. status(401).send({
-                errorMessage: "토큰 유효기간이 만료되었습니다.",    
+                success: false,
+                errorMessage: "토큰 유효기간이 만료되었습니다."  
             });
         }
 
         // 검증에 실패한 경우 예외처리
         res.status(401).send({
-            errorMessage: "로그인 후 이용 가능한 기능입니다.",
+            success: false,
+            errorMessage: "로그인 후 이용 가능한 기능입니다."
         });
     }
 };
