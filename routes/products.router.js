@@ -17,10 +17,7 @@ router.post("/products", authMiddleware, async (req, res) => {
 
     // 입력받은 상품명 찾아서 할당
     const findingProductsName = await products.find({
-        where: {
-            userId,
-            productsName
-        }
+        where: { userId, productsName }
     });
     // 동일한 상품명이 있을시에 예외처리
     if (findingProductsName.length) {
@@ -54,12 +51,13 @@ router.get("/products/:productsName", async (req, res) => {
     const {productsName} = req.params;
     // 해당하는 상품명을 가진 객체하나를 반환하고 select를 통해 해당하는 값만 할당
     const detail = await products.findOne({
-        where: {
-            productsName
-        }
+        where: { productsName },
+        include: [
+            {model: User, attributes: ["name"]}
+        ],
+        attributes: ["productsId", "productsName", "contentWriting", "name", "productStatus", "date"]
     })
-    .select("productsName contentWriting name productStatus date");
-
+ 
     // 해당하는 상품이 없으면 메시지 반환
     if (!detail.length) {
         return res.status(400).send({success: false, errorMessage:"상품 조회에 실패하였습니다."});
@@ -79,10 +77,7 @@ router.put("/products/:productsName", authMiddleware, async (req, res) => {
 
     // 해당하는 상품명을 가진 객체를 반환하고 할당
     const findingProduct = await products.findOne({
-        where: {
-            userId,
-            productsName
-        }
+        where: { userId, productsName }
     });
 
     // 해당하는 상품이 없을 경우 메시지 반환
@@ -97,13 +92,8 @@ router.put("/products/:productsName", authMiddleware, async (req, res) => {
 
     // 작성내용, 상품상태를 수정한다.
     await products.update(
-        { contentWriting, productStatus},
-        {
-            where: {
-                userId,
-                productsName
-            }
-        }
+        { contentWriting, productStatus },
+        { where: { userId, productsName } }
     );
     
     res.json({ success: true });
@@ -119,10 +109,7 @@ router.delete("/products/:productsName", authMiddleware, async (req, res) => {
     
     // 인증에 성공한 userId와 상품을 등록한 userId가 일치한 상품의 객체를 반환하고 할당
     const findingProduct = await products.findOne({
-        where: {
-            userId,
-            productsName
-        }    
+        where: { userId, productsName }    
     });
 
     // 해당하는 상품이 없을 경우 메시지 반환
@@ -137,10 +124,7 @@ router.delete("/products/:productsName", authMiddleware, async (req, res) => {
     
     // 해당하는 상품을 삭제한다.
     await products.destroy({
-        where: {
-            userId,
-            productsName
-        }
+        where: { userId, productsName }
     });     
 
     res.json({ success: true });
