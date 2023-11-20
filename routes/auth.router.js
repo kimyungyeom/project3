@@ -80,7 +80,8 @@ router.post("/auth/login", async (req, res) => {
     // 유저 존재 유무 확인
     if (!user) {
         return res.status(400).send({
-            errorMessage : "해당 이메일을 가진 유저가 존재하지 않습니다.",
+            success: false,
+            errorMessage : "해당 이메일을 가진 유저가 존재하지 않습니다."
         });
     }
 
@@ -89,7 +90,8 @@ router.post("/auth/login", async (req, res) => {
     
     if (!match) {
       return res.status(400).send({
-         errorMessage: "비밀번호가 틀렸습니다. 다시 확인해주세요.",
+            success: false,
+            errorMessage: "비밀번호가 틀렸습니다. 다시 확인해주세요."
       });
     }
   
@@ -99,15 +101,16 @@ router.post("/auth/login", async (req, res) => {
         { userId: user.userId },
         secretKey,
         // Token 유효기한 12시간 설정
-        { expiresIn: new Date().getHours() + 12 }
+        { expiresIn: "12h" }
     );
-    
+   
     // 생성한 Token 반환
     return res.status(200).json({
         success: true,
         message: "로그인 되었습니다.",
-        data: { token: accessToken }
+        data: { token: `Bearer ${accessToken}` }
     });
+
 });
 
 // router 모듈 내보내기
