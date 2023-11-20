@@ -14,7 +14,7 @@ router.post("/products", authMiddleware, async (req, res) => {
     const { productsName, contentWriting } = req.body;
 
     // 입력받은 데이터 및 기존 데이터를 이용해 생성한 값을 할당
-    const createdProducts = await products.create(productsName, contentWriting);
+    const createdProducts = await products.create({ productsName, contentWriting});
     
     return res.status(201).json({
         success: true,
