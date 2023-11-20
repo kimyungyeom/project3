@@ -14,36 +14,30 @@ module.exports = class Products extends Model {
             },
             // 상품명
             productsName: {
-                type: String,
-                required: true,
-                unique: true
+                type: DataTypes.STRING,
+                allowNull: false
             },
             // 작성내용
             contentWriting: {
-                type: String,
-                required: true
-            },
-            // 작성자명
-            name: {
-                type: String,
-                required: true
+                type: DataTypes.STRING,
+                allowNull: false
             },
             // 상품상태
             productStatus: {
-                type: String,
                 // 필드값 제한하기
-                enum: ["FOR_SALE", "SOLD_OUT"],
+                type: DataTypes.ENUM("FOR_SALE", "SOLD_OUT"),
                 // 기본값 설정
-                default: "FOR_SALE"
+                defaultValue: "FOR_SALE"
             },
             // 작성날짜
             date: {
-                type: Date,
-                default: Date.now
+                type: DataTypes.DATE,
+                defaultValue: DataTypes.NOW
             }
         }, {
             sequelize,
             modelName: 'Product',
+            tableName: "products"
         });
     }
 
