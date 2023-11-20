@@ -16,7 +16,8 @@ module.exports = class User extends Model {
             password: DataTypes.STRING
         }, {
             sequelize,
-            modelName: 'User',
+            modelName: "User",
+            tableName: "Users"
         });
     }
 
