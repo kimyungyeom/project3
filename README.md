@@ -10,8 +10,8 @@ https://www.erdcloud.com/d/prefszpPww6y9a9nj
 
 # 환경 변수
 Server_port
-MYSQL_USERNAME
-MYSQL_PASSWORD
-MYSQL_DATABASE
-MYSQL_HOST
+MYSQL_USERNAME  
+MYSQL_PASSWORD  
+MYSQL_DATABASE  
+MYSQL_HOST  
 Secret_key
