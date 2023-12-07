@@ -1,3 +1,4 @@
+// import
 require("dotenv").config();
 
 const development = {
@@ -8,4 +9,5 @@ const development = {
 	dialect: "mysql",
 };
 
+// export
 module.exports = { development };
