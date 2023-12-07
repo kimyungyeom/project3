@@ -6,6 +6,8 @@
 	"type": "module",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
+		"migrate:up": "npx sequelize db:migrate --config config/config.cjs",
+		"migrate:down": "npx sequelize db:migrate:undo --config config/config.cjs",
 		"dev": "nodemon app.js"
 	},
 	"keywords": [],
