@@ -9,7 +9,7 @@ https://docs.google.com/spreadsheets/d/1XXmvFdjoQmYAYid6rfMbZ6DDWGqiRKFUyfunnnqH
 https://www.erdcloud.com/d/prefszpPww6y9a9nj
 
 # 환경 변수
-Server_port
+SERVER_PORT  
 MYSQL_USERNAME  
 MYSQL_PASSWORD  
 MYSQL_DATABASE  
