@@ -3,7 +3,7 @@ const express = require("express");
 // Express 애플리케이션 생성 / express() 함수 호출
 const app = express();
 // 포트 번호 env 불러오기
-require('dotenv').config();
+require("dotenv").config();
 const port = process.env.Server_port;
 // cookie-parser 모듈 가져오기
 const cookieParser = require("cookie-parser");
@@ -25,5 +25,5 @@ app.use("/api", [productsRouter, usersRouter, authRouter]);
 
 // 서버 구동
 app.listen(port, () => {
-    console.log("서버 구동을 시작합니다.");
-})
+	console.log("서버 구동을 시작합니다.");
+});
