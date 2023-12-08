@@ -24,7 +24,7 @@ router.post("/signup", async (req, res) => {
 		// 비밀번호 조건을 만족하지 않는 경우
 		// 1. 비밀번호 최소 6자리 이상 2. 비밀번호와 확인비밀번호가 서로 일치
 		if (password.length < 6 || password !== confirmPassword) {
-			return res.status(400).send({
+			return res.status(401).send({
 				success: false,
 				errorMessage: "비밀번호 최소 6자 이상이어야 하며, 비밀번호가 서로 일치해야 합니다.",
 			});
