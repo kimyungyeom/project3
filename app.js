@@ -1,27 +1,28 @@
-// Express 모듈 가져오기
-const express = require("express");
-// Express 애플리케이션 생성 / express() 함수 호출
-const app = express();
-// 포트 번호 env 불러오기
-require("dotenv").config();
-const port = process.env.Server_port;
-// cookie-parser 모듈 가져오기
-const cookieParser = require("cookie-parser");
-// products.router.js 가져오기
-const productsRouter = require("./routes/products.router.js");
-// users.router.js 가져오기
-const usersRouter = require("./routes/users.router.js");
-// auth.router.js 가져오기
-const authRouter = require("./routes/auth.router.js");
+// import
+import express from "express";
+import cookieParser from "cookie-parser";
+import "dotenv/config";
 
-// JSON 미들웨어 사용
+// express 함수 호출 및 객체 생성
+const app = express();
+
+// port
+const port = process.env.SERVER_PORT;
+
+// import router
+import authRouter from "./routes/auth.router.js";
+import usersRouter from "./routes/users.router.js";
+import productsRouter from "./routes/products.router.js";
+
+// global variables
 app.use(express.json());
-// form-urlencoded 라는 규격의 body 데이터를 손쉽게 코드에서 사용할 수 있는 미들웨어 사용
-app.use(express.urlencoded({ extended: false }));
-// cookieParser 미들웨어 사용
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-// 위에서 가져온 라우터 미들웨어 사용
-app.use("/api", [productsRouter, usersRouter, authRouter]);
+
+// router middleware
+app.use("/api/auth", authRouter);
+app.use("/api/user", usersRouter);
+app.use("/api/products", productsRouter);
 
 // 서버 구동
 app.listen(port, () => {
